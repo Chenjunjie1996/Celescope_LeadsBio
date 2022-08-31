@@ -81,7 +81,6 @@ class Summarize(Step):
         self.trust_report = f'{args.assemble_out}/{self.sample}_{TRUST_REPORT_SUFFIX}'
         self.annot = f'{args.assemble_out}/{self.sample}_{ANNOTATE_SUFFIX}'
 
-        self.match_dict = utils.parse_match_dir(args.match_dir)
         self.chains, self.paired_groups = self._parse_seqtype(self.seqtype)
 
         # if --diffuseFrac provided
@@ -479,4 +478,3 @@ def get_opts_summarize(parser, sub_program):
         parser = s_common(parser)
         parser.add_argument('--fq2', help='Barcode R2 reads.', required=True)
         parser.add_argument('--assemble_out', help='Result of  assemble dirctory.', required=True)
-        parser.add_argument('--match_dir', help='Match scRNA-seq directory.', required=True)

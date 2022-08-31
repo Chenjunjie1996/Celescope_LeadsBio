@@ -33,17 +33,10 @@ class Annotation(Step):
         Step.__init__(self, args, display_title=display_title)
 
         self.seqtype = args.seqtype
-        self.match_dir = args.match_dir
         self.chains, self.paired_groups = Summarize._parse_seqtype(self.seqtype)
         self.contig_file = f'{args.summarize_out}/{self.sample}_filtered_contig.csv'
         self.clonotype_file = f'{args.summarize_out}/clonotypes.csv'        
         self.celltype_set = CELL_TYPE_DICT[self.seqtype]
-
-        try:
-            self.rds = glob.glob(f'{self.match_dir}/06.analysis/*.rds')[0]
-            self.assign_file = glob.glob(f'{self.match_dir}/06.analysis/*_auto_assign/*_auto_cluster_type.tsv')[0]
-        except IndexError:
-            pass
 
     def parse_clonotype(self):
         """Generate clonotypes table in html.
@@ -152,46 +145,8 @@ class Annotation(Step):
         )
         subprocess.check_call(cmd, shell=True)
 
-    @utils.add_log
-    def mapping_process(self):
-        """Mapping result with matched scRNA.
-        """
-        Annotation.run_mapping(
-            self.rds, self.contig_file, self.sample, self.outdir, self.assign_file
-            )
-
-        meta = pd.read_csv(f'{self.outdir}/{self.sample}_meta.csv')
-        metaTB = meta[meta['CellTypes'].isin(self.celltype_set)]
-        mappedmeta = meta[meta['Class']=='T/BCR']
-        mappedmetaTB = mappedmeta[mappedmeta['CellTypes'].isin(self.celltype_set)]
-        
-        self.add_metric(
-            'Total Cell Number in Matched transcriptome',
-            meta.shape[0],
-            show=False)
-        self.add_metric(
-            'Cell Number Successfully Mapped to transcriptome',
-            mappedmeta.shape[0],
-            show=False)
-        self.add_metric(
-            'T/B cell Number in Matched transcriptome',
-            metaTB.shape[0],
-            show=False)
-        self.add_metric(
-            'Cell Number Successfully Mapped to T/B cell in transcriptome',
-            mappedmetaTB.shape[0],
-            show=False)
-    
     def run(self):
         self.annotation_process()
-
-        try:
-            if self.rds and self.assign_file:
-                self.mapping_process()
-        except AttributeError:
-            print("rds file and type file do not exist" + "\n" )
-        except ZeroDivisionError:
-            print("Not found auto-assigned T/B cell in matched sc-RNA")
 
 
 @utils.add_log
@@ -205,6 +160,5 @@ def get_opts_annotation(parser, sub_program):
                         choices=['TCR', 'BCR'], required=True)               
     if sub_program:
         s_common(parser)
-        parser.add_argument('--match_dir', help='scRNA-seq match directory', required=True)
         parser.add_argument('--summarize_out', help='summarize output directory', required=True)  
     return parser

@@ -35,10 +35,10 @@ class Mapping(Step):
 
         n_extract = len(self._chains) + 1
         self._single_thread = math.ceil(self.thread / n_extract)
-        self._matched_reads = self.get_slot_key(
+        self._valid_reads = self.get_slot_key(
             slot='metrics',
             step_name='barcode',
-            key='Valid Matched Reads',
+            key='Valid Reads',
         )
 
     
@@ -93,7 +93,7 @@ class Mapping(Step):
         self.add_metric(
             name = 'Reads Mapped to Any V(D)J genes', 
             value = n_bcrtcr,
-            total = self._matched_reads,
+            total = self._valid_reads,
             help_info = "Fraction of reads that partially or wholly map to any germline V(D)J gene segment"
         )
 
@@ -102,7 +102,7 @@ class Mapping(Step):
             self.add_metric(
                 name = f'Reads Mapped to {_chain}', 
                 value = n_chain, 
-                total = self._matched_reads,
+                total = self._valid_reads,
                 help_info = f"Fraction of reads that map partially or wholly to a germline {_chain} gene segment."
             )
 
