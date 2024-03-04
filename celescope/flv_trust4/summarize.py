@@ -270,19 +270,19 @@ class Summarize(Step):
             df_chain_heavy = df_for_clono[df_for_clono['chain'] == 'TRA']
             df_chain_light = df_for_clono[df_for_clono['chain'] == 'TRB']
 
-        filtered_congtigs_id = set()
-        for _df in [df_chain_heavy, df_chain_light]:
-            target_contigs = target_cell_calling(
-            _df, 
-            expected_target_cell_num=self.expected_target_cell_num, 
-            target_barcodes=self.target_barcodes,
-            weight = self.target_weight,
-            coef = self.coef
-            )
-            filtered_congtigs_id = filtered_congtigs_id | target_contigs       
+        # filtered_congtigs_id = set()
+        # for _df in [df_chain_heavy, df_chain_light]:
+        #     target_contigs = target_cell_calling(
+        #     _df, 
+        #     expected_target_cell_num=self.expected_target_cell_num, 
+        #     target_barcodes=self.target_barcodes,
+        #     weight = self.target_weight,
+        #     coef = self.coef
+        #     )
+        #     filtered_congtigs_id = filtered_congtigs_id | target_contigs       
         
-        df_for_clono = df_for_clono[df_for_clono.contig_id.isin(filtered_congtigs_id)]
-        self.add_cell_num_metric(df_for_clono, 'Cell Number after UMI filtering')
+        # df_for_clono = df_for_clono[df_for_clono.contig_id.isin(filtered_congtigs_id)]
+        # self.add_cell_num_metric(df_for_clono, 'Cell Number after UMI filtering')
         
         df_for_clono_pro = df_for_clono[df_for_clono['productive']==True]
         cell_barcodes, filtered_contig = set(df_for_clono_pro['barcode']), set(df_for_clono_pro['contig_id'])
